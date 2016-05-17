@@ -42,6 +42,11 @@
                 <servlet-class>edu.stanford.bmir.protege.web.server.projectconvert.ProjectConvertServlet</servlet-class>
         </servlet>
         
+         <servlet>
+                <servlet-name>TrillProjectImportServlet</servlet-name>
+                <servlet-class>edu.stanford.bmir.protege.web.server.projectimport.TrillProjectImportServlet</servlet-class>
+        </servlet>
+        
 	<servlet>
 		<servlet-name>AdminServiceImpl</servlet-name>
 		<servlet-class>edu.stanford.bmir.protege.web.server.AdminServiceImpl</servlet-class>
@@ -159,6 +164,11 @@
         <servlet-mapping>
                  <servlet-name>ProjectConvertServlet</servlet-name>
                  <url-pattern>/convert</url-pattern>
+        </servlet-mapping>
+        
+        <servlet-mapping>
+                 <servlet-name>TrillProjectImportServlet</servlet-name>
+                 <url-pattern>/trillimport</url-pattern>
         </servlet-mapping>
         
 	<servlet-mapping>

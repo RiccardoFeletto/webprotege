@@ -30,6 +30,9 @@
 
     <inherits name="org.semanticweb.owlapi.gwt.owlapi"/>
 
+ <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+<add-linker name="xsiframe" />
+
 
 
 	<inherits name='com.gwtext.GwtExt' />

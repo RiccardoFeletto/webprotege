@@ -24,5 +24,8 @@
     <inherits name="edu.stanford.bmir.gwtcodemirror.GWTCodeMirrorModule"/>
 
 	<entry-point class="edu.stanford.bmir.protege.web.client.Authenticate"/> 
+ <set-configuration-property name="xsiframe.failIfScriptTag" value="FALSE"/>
+<add-linker name="xsiframe" />
+
     
 </module>

@@ -57,7 +57,7 @@ public class DefaultLogger implements WebProtegeLogger {
     @Override
     public void severe(Throwable t) {
         String message = formatMessage(t, Optional.<UserId>absent(), Optional.<HttpServletRequest>absent());
-        logSevereMessage(message, isMailableException(t));
+        //logSevereMessage(message, isMailableException(t));
     }
 
     private void logSevereMessage(String message, boolean sendMail) {
