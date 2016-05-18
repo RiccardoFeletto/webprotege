@@ -1,13 +1,15 @@
 package edu.stanford.bmir.protege.web.server.projectimport;
 
 import edu.stanford.bmir.protege.web.client.rpc.data.DocumentId;
+import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProject;
+import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectCache;
+import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectDocumentStore;
+import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectManager;
 import edu.stanford.bmir.protege.web.client.rpc.data.NewProjectSettings;
 import edu.stanford.bmir.protege.web.client.rpc.data.NotSignedInException;
 import edu.stanford.bmir.protege.web.client.rpc.data.ProjectType;
 import edu.stanford.bmir.protege.web.server.MetaProjectManager;
 import edu.stanford.bmir.protege.web.server.ProjectManagerServiceImpl;
-import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProject;
-import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectManager;
 import edu.stanford.bmir.protege.web.shared.crud.oboid.UserIdRange;
 import edu.stanford.bmir.protege.web.shared.project.ProjectAlreadyRegisteredException;
 import edu.stanford.bmir.protege.web.shared.project.ProjectDetails;
@@ -128,20 +130,24 @@ public class TrillProjectImportServlet extends HttpServlet {
         //End of multipart/form-data.
         writer.append("--" + boundary + "--").append(CRLF).flush();
         
-        /*response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        out.println("<html><head><title>prova</title></head><body>");
-        out.println(tmpZip.toPath()+"<br>");
-        out.println(((HttpURLConnection) connection).getResponseMessage());
-        out.println("<br></body></html>");*/
-        
         ProjectType prtype = new ProjectType(paramPrType);
         
-        NewProjectSettings newProjectSettings = new NewProjectSettings(UserId.getGuest(),paramPrName,paramPrDesc,prtype);
+        NewProjectSettings newProjectSettings = new NewProjectSettings(UserId.getGuest(),paramPrName,paramPrDesc,prtype);  
         
-        OWLAPIProjectManager pm = null;
+        OWLAPIProjectCache pc = new OWLAPIProjectCache();
         
-        pm.createNewProject(newProjectSettings);
+        OWLAPIProject pro = pc.getProject(newProjectSettings);
+        
+        MetaProjectManager mpm = MetaProjectManager.getManager();
+        
+        mpm.registerProject(pro.getProjectId(), newProjectSettings);
+        
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html><head><title>prova</title></head><body>");
+        out.println(tmpZip.toPath()+"<br>"+ pro.getProjectId()+"<br>");
+        out.println(((HttpURLConnection) connection).getResponseMessage());
+        out.println("<br></body></html>");
     }
    }
 }  
