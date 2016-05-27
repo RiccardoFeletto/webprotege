@@ -1,30 +1,18 @@
 package edu.stanford.bmir.protege.web.server.projectimport;
 
 import edu.stanford.bmir.protege.web.client.rpc.data.DocumentId;
-import edu.stanford.bmir.protege.web.client.rpc.data.FileUploadResponseAttributes;
 import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProject;
 import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectCache;
-import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectDocumentStore;
-import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectManager;
 import edu.stanford.bmir.protege.web.client.rpc.data.NewProjectSettings;
 import edu.stanford.bmir.protege.web.client.rpc.data.ProjectType;
 import edu.stanford.bmir.protege.web.server.MetaProjectManager;
-import edu.stanford.bmir.protege.web.server.ProjectManagerServiceImpl;
-import edu.stanford.bmir.protege.web.shared.crud.oboid.UserIdRange;
-import edu.stanford.bmir.protege.web.shared.project.ProjectAlreadyRegisteredException;
-import edu.stanford.bmir.protege.web.shared.project.ProjectDetails;
-import edu.stanford.bmir.protege.web.shared.project.ProjectDocumentExistsException;
-import edu.stanford.bmir.protege.web.shared.project.ProjectId;
 import edu.stanford.bmir.protege.web.shared.user.UserId;
-import edu.stanford.smi.protege.server.metaproject.ProjectInstance;
-import edu.stanford.bmir.protege.web.client.rpc.ProjectManagerService;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -33,10 +21,8 @@ import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -51,6 +37,12 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * Servlet implementation class TrillProjectImportServlet
+ * @author RiccardoFeletto
+ * Servlet per l'importazione di una ontologia da trill
+ * Riceve una richiesta post da trill contenente l'ontologia la salva in un file .owl che successivamente verrà
+ * caricato in webprotege sfruttando la servlet per il fileupload, successivamente viene creato un progetto temporaneo,
+ * project name e project desc vengono generati usando un timestamp.
+ * La servelet risponde con un redirect sulla pagina di edit del progetto appena creato.
  */
 public class TrillProjectImportServlet extends HttpServlet {
        
@@ -132,9 +124,12 @@ public class TrillProjectImportServlet extends HttpServlet {
         DocumentId docid = new DocumentId(uploadid);		  //Id file ontologia
         
         //Creo il progetto
-        NewProjectSettings newProjectSettings = new NewProjectSettings(UserId.getGuest(),paramPrName,paramPrDesc,prtype,docid);  
+        //Creo oggetto NewProjectSettings che contiene User proprietario del progetto projectname projectdesc projecttype e id dell'ontologia
+        NewProjectSettings newProjectSettings = new NewProjectSettings(UserId.getGuest(),paramPrName,paramPrDesc,prtype,docid);
+        //Oggetto usato per recuperare il projetto dal projectsettings
         OWLAPIProjectCache pc = new OWLAPIProjectCache();
         OWLAPIProject pro = pc.getProject(newProjectSettings);
+        //Oggetto usato per registrare il progetto
         MetaProjectManager mpm = MetaProjectManager.getManager();
         mpm.registerProject(pro.getProjectId(), newProjectSettings);
         
@@ -145,6 +140,9 @@ public class TrillProjectImportServlet extends HttpServlet {
         
         response.sendRedirect(redurl); //Redirect per aprire il progetto
     }
+    catch (Exception e) {
+		//TODO: Log!
+	}
    }
 }  
    
